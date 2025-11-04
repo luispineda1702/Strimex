@@ -3,7 +3,7 @@ import { View, Text, Image, TouchableOpacity, Modal, StyleSheet } from 'react-na
 
 interface MovieCardProps {
   title: string;
-  image: any; // puedes cambiarlo luego a { uri: string } si viene de API
+  image: any; 
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({ title, image }) => {
