@@ -31,7 +31,7 @@ const LoginScreen: React.FC<Props> = ({ onLogin, onRegister }) => {
       <StatusBar barStyle="light-content" backgroundColor="#0B0B0D" />
 
       <Image 
-        source={require('../assets/logoresplandor.png')} 
+        source={require('../../../assets/logoresplandor.png')} 
         style={styles.logo} 
         resizeMode="contain"
       />

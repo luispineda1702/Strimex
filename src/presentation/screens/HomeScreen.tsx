@@ -1,6 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import MovieCard from '../components/MovieCard';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+
+const navigation = useNavigation<NavigationProp<RouteStack>>();
 
 const HomeScreen = () => {
   return (
@@ -8,9 +11,9 @@ const HomeScreen = () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Recomendadas</Text>
         <View style={styles.grid}>
-          <MovieCard title="Avatar" image={require('../assets/avatar.jpg')} />
-          <MovieCard title="Inception" image={require('../assets/inception.jpg')} />
-          <MovieCard title="Interstellar" image={require('../assets/interstellar.jpg')} />
+          <MovieCard title="Avatar" image={require('../../../assets/avatar.jpg')} />
+          <MovieCard title="Inception" image={require('../../../assets/inception.jpg')} />
+          <MovieCard title="Interstellar" image={require('../../../assets/interstellar.jpg')} />
         </View>
       </View>
     </ScrollView>

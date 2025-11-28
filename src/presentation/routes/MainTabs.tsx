@@ -7,6 +7,7 @@ import MoviesScreen from '../screens/MoviesScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHome, faTv, faFilm, faUser } from '@fortawesome/free-solid-svg-icons';
+import { LoginScreenFB } from '../screens/auth/LoginScreenFB';
 
 const Tab = createBottomTabNavigator();
 
@@ -52,6 +53,7 @@ const MainTabs = ({ onLogout }: { onLogout: () => void }) => {
       <Tab.Screen name="Perfil">
         {() => <ProfileScreen onLogout={onLogout} />}
       </Tab.Screen>
+      <Tab.Screen name="FB" component={LoginScreenFB}/>
     </Tab.Navigator>
   );
 };
