@@ -1,30 +1,26 @@
-import React, { useState } from 'react';
+// presentation/routes/StackNavigator.tsx
+import React, { useEffect } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '../screens/LoginScreen';
 import MainTabs from './MainTabs';
+import { useAuth } from '../hooks/useAuth';
 
 const Stack = createStackNavigator();
 
 const StackNavigator = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { status, checkStatus, logout } = useAuth();
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-  };
+  useEffect(() => {
+    checkStatus();
+  }, []);
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {!isLoggedIn ? (
-        <Stack.Screen name="Login">
-          {() => <LoginScreen onLogin={handleLogin} />}
-        </Stack.Screen>
+      {status !== 'authenticated' ? (
+        <Stack.Screen name="Login" component={LoginScreen} />
       ) : (
         <Stack.Screen name="MainTabs">
-          {() => <MainTabs onLogout={handleLogout} />}
+          {() => <MainTabs onLogout={logout} />}
         </Stack.Screen>
       )}
     </Stack.Navigator>

@@ -1,3 +1,4 @@
+// presentation/screens/LoginScreen.tsx
 import React, { useState } from 'react';
 import {  
   Text, 
@@ -5,25 +6,42 @@ import {
   TouchableOpacity, 
   Image, 
   StyleSheet, 
-  StatusBar 
+  StatusBar,
+  ActivityIndicator,
+  Alert,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../hooks/useAuth';
 
-interface Props {
-  onLogin: () => void;
-  onRegister?: () => void;
-}
+const LoginScreen = () => {
+  const navigation: any = useNavigation();
+  const { login } = useAuth();
 
-const LoginScreen: React.FC<Props> = ({ onLogin, onRegister }) => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');       
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    if (username.trim() !== '' && password.trim() !== '') {
-      onLogin();
-    } else {
-      alert('Por favor, ingresa usuario y contraseña.');
+  const handleLogin = async () => {
+    if (email.trim() === '' || password.trim() === '') {
+      Alert.alert("Error", "Por favor, ingresa correo y contraseña.");
+      return;
     }
+
+    setLoading(true);
+
+    const result = await login(email.trim(), password);
+    
+    setLoading(false);
+
+    if (!result) {
+      Alert.alert("Error", "Credenciales incorrectas o token inválido.");
+      return;
+    }
+
+    // Navegar a MainTabs
+    navigation.navigate("MainTabs");
   };
 
   return (
@@ -40,10 +58,12 @@ const LoginScreen: React.FC<Props> = ({ onLogin, onRegister }) => {
 
       <TextInput
         style={styles.input}
-        placeholder="Usuario"
+        placeholder="Correo electrónico"
         placeholderTextColor="#888"
-        value={username}
-        onChangeText={setUsername}
+        value={email}
+        onChangeText={setEmail}
+        autoCapitalize="none"
+        keyboardType="email-address"
       />
 
       <TextInput
@@ -55,11 +75,15 @@ const LoginScreen: React.FC<Props> = ({ onLogin, onRegister }) => {
         onChangeText={setPassword}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Iniciar Sesión</Text>
+      <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+        {loading ? (
+          <ActivityIndicator color="#FFF" />
+        ) : (
+          <Text style={styles.buttonText}>Iniciar Sesión</Text>
+        )}
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={onRegister}>
+      <TouchableOpacity onPress={() => navigation.navigate("Register")}>
         <Text style={styles.registerText}>
           ¿No tienes cuenta? <Text style={styles.registerLink}>Regístrate</Text>
         </Text>

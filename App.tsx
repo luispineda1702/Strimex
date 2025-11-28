@@ -5,6 +5,7 @@ import { StatusBar } from 'react-native';
 
 const App = () => {
   return (
+    
     <NavigationContainer>
       <StatusBar barStyle={"light-content"}/>
       <StackNavigator />

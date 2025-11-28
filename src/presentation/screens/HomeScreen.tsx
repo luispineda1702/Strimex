@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import MovieCard from '../components/MovieCard';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 
-const navigation = useNavigation<NavigationProp<RouteStack>>();
+
 
 const HomeScreen = () => {
   return (
