@@ -5,11 +5,9 @@ import { auth } from "../../presentation/config/firebase";
 
 export const LoginUseCase = async (email: string, password: string) => {
 
-  // Firebase login
   const fbCred = await signInWithEmailAndPassword(auth, email, password);
   const firebaseToken = await fbCred.user.getIdToken();
 
-  // Backend login
   const backendUser = await AuthAPI.login(firebaseToken);
 
   await StorageAdapter.setItem("token", backendUser.token);

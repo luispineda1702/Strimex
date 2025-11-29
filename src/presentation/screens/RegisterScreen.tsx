@@ -40,24 +40,21 @@ const RegisterScreen = () => {
     try {
       setLoading(true);
 
-      // 1) Registrar en Firebase
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       const firebaseToken = await cred.user.getIdToken();
 
-      // 2) Registrar en Backend usando useAuth
       const ok = await register(firebaseToken, name);
 
       if (!ok) {
-        Alert.alert("Error", "No se pudo registrar en el servidor.");
+        Alert.alert('Error', 'No se pudo registrar en el servidor.');
         return;
       }
 
-      Alert.alert("Éxito", "Registro exitoso. Ahora inicia sesión.");
-      navigation.replace("Login");
-
+      Alert.alert('Éxito', 'Registro exitoso. Ahora inicia sesión.');
+      navigation.replace('Login');
     } catch (error: any) {
-      console.log("REGISTER ERROR:", error);
-      Alert.alert("Error", error.message ?? "No se pudo registrar");
+      console.log('REGISTER ERROR:', error);
+      Alert.alert('Error', error.message ?? 'No se pudo registrar');
     } finally {
       setLoading(false);
     }

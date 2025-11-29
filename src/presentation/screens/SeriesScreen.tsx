@@ -1,19 +1,19 @@
-import React, { useState } from "react";
-import { View, ScrollView, StyleSheet, Text, Image } from "react-native";
-import { useMediaByGenre } from "../hooks/useMediaByGenre";
-import MediaCarousel from "../components/MediaCarousel";
-import MediaModal from "../components/MediaModal";
-import { COLORS } from "../config/theme/colors";
+import React, { useState } from 'react';
+import { View, ScrollView, StyleSheet, Text, Image } from 'react-native';
+import { useMediaByGenre } from '../hooks/useMediaByGenre';
+import MediaCarousel from '../components/MediaCarousel';
+import MediaModal from '../components/MediaModal';
+import { COLORS } from '../config/theme/colors';
 
 const SeriesScreen = () => {
-  const { loading, sections } = useMediaByGenre("tv");
+  const { loading, sections } = useMediaByGenre('tv');
   const [selectedItem, setSelectedItem] = useState<any | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <Text style={{ color: "white" }}>Cargando...</Text>
+        <Text style={{ color: 'white' }}>Cargando...</Text>
       </View>
     );
   }
@@ -26,17 +26,14 @@ const SeriesScreen = () => {
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        
-        {/* Logo */}
         <View style={styles.header}>
           <Image
-            source={require("../../../assets/logoresplandor.png")}
+            source={require('../../../assets/logoresplandor.png')}
             style={styles.logo}
             resizeMode="contain"
           />
         </View>
 
-        {/* Carruseles por género */}
         {sections.map((section, idx) => (
           <MediaCarousel
             key={idx}
@@ -65,11 +62,11 @@ const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
     backgroundColor: COLORS.background,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
-    alignItems: "center",
+    alignItems: 'center',
     marginBottom: 20,
   },
   logo: {

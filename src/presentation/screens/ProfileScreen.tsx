@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   Text,
@@ -6,15 +6,15 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-} from "react-native";
+} from 'react-native';
 
-import { useAuth } from "../hooks/useAuth";
-import { useFavorites } from "../hooks/useFavorites";
+import { useAuth } from '../hooks/useAuth';
+import { useFavorites } from '../hooks/useFavorites';
 
-import { COLORS } from "../config/theme/colors";
-import { FONTS } from "../config/theme/fonts";
+import { COLORS } from '../config/theme/colors';
+import { FONTS } from '../config/theme/fonts';
 
-const IMAGE_BASE = "https://image.tmdb.org/t/p/w500";
+const IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
 
 const ProfileScreen = () => {
   const { user, logout } = useAuth();
@@ -22,14 +22,12 @@ const ProfileScreen = () => {
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-
-      {/* HEADER */}
       <View style={styles.header}>
         <Image
           source={
             user?.avatar
               ? { uri: user.avatar }
-              : require("../../../assets/userplaceholder.png")
+              : require('../../../assets/userplaceholder.png')
           }
           style={styles.avatar}
         />
@@ -37,14 +35,13 @@ const ProfileScreen = () => {
         <Text style={styles.email}>{user?.correo}</Text>
       </View>
 
-      {/* FAVORITOS */}
       <Text style={styles.sectionTitle}>⭐ Mis Favoritos</Text>
 
       <View style={styles.favoritesGrid}>
         {favorites.length === 0 ? (
           <Text style={styles.noFavs}>No tienes favoritos aún.</Text>
         ) : (
-          favorites.map((item) => (
+          favorites.map(item => (
             <Image
               key={`${item.id}-${item.type}`}
               source={{ uri: IMAGE_BASE + item.poster }}
@@ -54,11 +51,9 @@ const ProfileScreen = () => {
         )}
       </View>
 
-      {/* LOGOUT */}
       <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
         <Text style={styles.logoutText}>Cerrar Sesión</Text>
       </TouchableOpacity>
-
     </ScrollView>
   );
 };
@@ -71,7 +66,7 @@ const styles = StyleSheet.create({
   },
 
   header: {
-    alignItems: "center",
+    alignItems: 'center',
     marginVertical: 30,
   },
 
@@ -105,13 +100,13 @@ const styles = StyleSheet.create({
   },
 
   favoritesGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
 
   favoritePoster: {
-    width: "48%",
+    width: '48%',
     height: 180,
     borderRadius: 12,
     marginBottom: 10,
@@ -120,8 +115,8 @@ const styles = StyleSheet.create({
   noFavs: {
     color: COLORS.textSecondary,
     fontFamily: FONTS.regular,
-    textAlign: "center",
-    width: "100%",
+    textAlign: 'center',
+    width: '100%',
     marginTop: 10,
   },
 
@@ -130,12 +125,12 @@ const styles = StyleSheet.create({
     marginTop: 30,
     paddingVertical: 14,
     borderRadius: 12,
-    alignItems: "center",
+    alignItems: 'center',
     marginBottom: 60,
   },
 
   logoutText: {
-    color: "#FFF",
+    color: '#FFF',
     fontFamily: FONTS.bold,
     fontSize: 16,
   },

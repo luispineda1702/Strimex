@@ -35,7 +35,6 @@ const HomeScreen = () => {
           />
         </View>
 
-        {/* 🔥 POPULARES */}
         <MediaCarousel
           title="🔥 Películas Populares"
           items={homeData.popularMovies}
@@ -48,7 +47,6 @@ const HomeScreen = () => {
           onSelect={openModal}
         />
 
-        {/* ⭐ TOP RATED */}
         <MediaCarousel
           title="⭐ Películas Mejor Calificadas"
           items={homeData.topMovies}
@@ -61,7 +59,6 @@ const HomeScreen = () => {
           onSelect={openModal}
         />
 
-        {/* 📈 TENDENCIAS */}
         <MediaCarousel
           title="📈 Tendencias"
           items={homeData.trending}
@@ -69,7 +66,6 @@ const HomeScreen = () => {
         />
       </ScrollView>
 
-      {/* MODAL */}
       <MediaModal
         visible={modalVisible}
         item={selectedItem}
@@ -92,15 +88,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   header: {
-  alignItems: "center",
-  marginBottom: 20,
-},
+    alignItems: 'center',
+    marginBottom: 20,
+  },
 
-logo: {
-  width: 160,
-  height: 70,
-  marginTop: 20,
-},
+  logo: {
+    width: 160,
+    height: 70,
+    marginTop: 20,
+  },
 });
 
 export default HomeScreen;

@@ -78,9 +78,6 @@ export const useAuth = create<AuthState>()((set, get) => ({
     }
   },
 
-  //----------------------------------
-  // VALIDAR SESIÓN GUARDADA
-  //----------------------------------
   checkStatus: async () => {
     const token = await StorageAdapter.getItem("token");
 
@@ -110,9 +107,6 @@ export const useAuth = create<AuthState>()((set, get) => ({
     });
   },
 
-  //----------------------------------
-  // LOGOUT
-  //----------------------------------
   logout: async () => {
     await StorageAdapter.removeItem("token");
     await StorageAdapter.removeItem("email");

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   Modal,
   View,
@@ -8,13 +8,13 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
-} from "react-native";
+} from 'react-native';
 
-import { COLORS } from "../config/theme/colors";
-import { FONTS } from "../config/theme/fonts";
+import { COLORS } from '../config/theme/colors';
+import { FONTS } from '../config/theme/fonts';
 
-import { useFavorites } from "../hooks/useFavorites";
-import { ProvidersAPI } from "../../data/source/remote/api/providers.api";
+import { useFavorites } from '../hooks/useFavorites';
+import { ProvidersAPI } from '../../data/source/remote/api/providers.api';
 
 const MediaModal = ({ visible, item, onClose }) => {
   const { toggleFavorite, isFavorite } = useFavorites();
@@ -31,14 +31,13 @@ const MediaModal = ({ visible, item, onClose }) => {
     try {
       setLoadingProviders(true);
 
-      // siempre enviamos movie / tv
       const mediaType =
-        item.mediaType || (item.title && !item.name ? "movie" : "tv");
+        item.mediaType || (item.title && !item.name ? 'movie' : 'tv');
 
       const data = await ProvidersAPI.getProviders(item.id, mediaType);
       setProviders(data);
     } catch (e) {
-      console.log("Error loading providers:", e);
+      console.log('Error loading providers:', e);
     } finally {
       setLoadingProviders(false);
     }
@@ -46,14 +45,11 @@ const MediaModal = ({ visible, item, onClose }) => {
 
   if (!item) return null;
 
-  // corregido: ahora si se reconoce favorito
   const fav = isFavorite(item.id);
 
-  // parche final: aseguramos que el item tenga mediaType
   const itemFixed = {
     ...item,
-    mediaType:
-      item.mediaType || (item.title && !item.name ? "movie" : "tv"),
+    mediaType: item.mediaType || (item.title && !item.name ? 'movie' : 'tv'),
   };
 
   return (
@@ -61,66 +57,56 @@ const MediaModal = ({ visible, item, onClose }) => {
       <View style={styles.overlay}>
         <View style={styles.container}>
           <ScrollView showsVerticalScrollIndicator={false}>
+            <Image source={{ uri: item.poster }} style={styles.poster} />
 
-            {/* Poster */}
-            <Image
-              source={{ uri: item.poster }}
-              style={styles.poster}
-            />
-
-            {/* Title */}
             <Text style={styles.title}>{item.title}</Text>
 
-            {/* Rating */}
             {item.rating && (
               <Text style={styles.rating}>⭐ {item.rating.toFixed(1)}</Text>
             )}
 
-            {/* Genres */}
             {item.genres && (
-              <Text style={styles.genres}>
-                {item.genres.join(" • ")}
-              </Text>
+              <Text style={styles.genres}>{item.genres.join(' • ')}</Text>
             )}
 
-            {/* Overview */}
             {item.overview && (
               <Text style={styles.overview}>{item.overview}</Text>
             )}
 
-            {/* ⭐ Providers */}
             <Text style={styles.subTitle}>Disponible en:</Text>
 
             {loadingProviders ? (
               <ActivityIndicator color="white" style={{ marginVertical: 10 }} />
             ) : providers.length === 0 ? (
-              <Text style={styles.noProviders}>No disponible en plataformas</Text>
+              <Text style={styles.noProviders}>
+                No disponible en plataformas
+              </Text>
             ) : (
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {providers.map((p) => (
+                {providers.map(p => (
                   <View key={p.providerId} style={styles.providerCard}>
-                    <Image source={{ uri: p.logo }} style={styles.providerLogo} />
+                    <Image
+                      source={{ uri: p.logo }}
+                      style={styles.providerLogo}
+                    />
                     <Text style={styles.providerName}>{p.name}</Text>
                   </View>
                 ))}
               </ScrollView>
             )}
 
-            {/* ❤️ Favorite Button */}
             <TouchableOpacity
               style={[styles.favButton, fav ? styles.remove : styles.add]}
               onPress={() => toggleFavorite(itemFixed)}
             >
               <Text style={styles.favText}>
-                {fav ? "Quitar de Favoritos" : "Agregar a Favoritos"}
+                {fav ? 'Quitar de Favoritos' : 'Agregar a Favoritos'}
               </Text>
             </TouchableOpacity>
 
-            {/* Close */}
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
               <Text style={styles.closeText}>Cerrar</Text>
             </TouchableOpacity>
-
           </ScrollView>
         </View>
       </View>
@@ -131,18 +117,18 @@ const MediaModal = ({ visible, item, onClose }) => {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.85)",
-    justifyContent: "flex-end",
+    backgroundColor: 'rgba(0,0,0,0.85)',
+    justifyContent: 'flex-end',
   },
   container: {
-    height: "85%",
+    height: '85%',
     backgroundColor: COLORS.card,
     borderTopLeftRadius: 18,
     borderTopRightRadius: 18,
     padding: 16,
   },
   poster: {
-    width: "100%",
+    width: '100%',
     height: 250,
     borderRadius: 12,
   },
@@ -177,7 +163,7 @@ const styles = StyleSheet.create({
   },
   providerCard: {
     marginRight: 15,
-    alignItems: "center",
+    alignItems: 'center',
   },
   providerLogo: {
     width: 60,
@@ -186,7 +172,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   providerName: {
-    color: "white",
+    color: 'white',
     fontSize: 12,
     fontFamily: FONTS.regular,
   },
@@ -198,21 +184,21 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingVertical: 12,
     borderRadius: 12,
-    alignItems: "center",
+    alignItems: 'center',
   },
   add: {
     backgroundColor: COLORS.primary,
   },
   remove: {
-    backgroundColor: "#FF5555",
+    backgroundColor: '#FF5555',
   },
   favText: {
     fontFamily: FONTS.bold,
-    color: "#FFF",
+    color: '#FFF',
   },
   closeButton: {
     marginTop: 25,
-    alignItems: "center",
+    alignItems: 'center',
   },
   closeText: {
     color: COLORS.textSecondary,

@@ -48,7 +48,6 @@ const styles = StyleSheet.create({
     height: 190,
     borderRadius: 12,
 
-    // Estilo profesional tipo Netflix
     shadowColor: '#000',
     shadowOpacity: 0.25,
     shadowRadius: 6,
