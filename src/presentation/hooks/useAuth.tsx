@@ -1,107 +1,126 @@
-// presentation/hooks/useAuth.tsx
+// src/presentation/hooks/useAuth.tsx
+
 import { create } from "zustand";
 import { User } from "../../domain/entities/user";
 import { StorageAdapter } from "../../data/source/local/storage.adapter";
 import { LoginUseCase } from "../../domain/useCases/login.usecase";
-import { AuthAPI } from "../../data/source/remote/api/auth.api"; // tu adapter para validateToken
+import { AuthAPI } from "../../data/source/remote/api/auth.api";
 
-export type AuthStatus = 'checking' | 'authenticated' | 'unauthenticated';
+import { signOut } from "firebase/auth";
+import { auth } from "../../presentation/config/firebase";
+
+// ----------------------------
+// TIPOS
+// ----------------------------
+export type AuthStatus = "checking" | "authenticated" | "unauthenticated";
 
 export interface AuthState {
   status: AuthStatus;
   token?: string;
   user?: User;
 
-  login: (email: string, password: string) => Promise<any>;
-  checkStatus: () => Promise<any>;
-  logout: () => Promise<any>;
+  login: (email: string, password: string) => Promise<User | null>;
+  register: (firebaseToken: string, name: string) => Promise<boolean>;
+  checkStatus: () => Promise<void>;
+  logout: () => Promise<void>;
 }
 
+// ----------------------------
+// STORE DE ZUSTAND
+// ----------------------------
 export const useAuth = create<AuthState>()((set, get) => ({
-  status: 'checking',
+
+  status: "checking",
   token: undefined,
   user: undefined,
 
+  //----------------------------------
+  // LOGIN
+  //----------------------------------
   login: async (email: string, password: string) => {
     try {
-      // 1) Ejecutar el caso de uso (internamente hará Firebase + backend validate)
       const user = await LoginUseCase(email, password);
 
-      
-      const token = await StorageAdapter.getItem("token");
-
-      // Si no hay token (por implementación anterior), no es crítico; guardamos user y status.
+      await StorageAdapter.setItem("token", user.token);
       await StorageAdapter.setItem("email", user.correo);
       await StorageAdapter.setItem("fullName", user.nombreCompleto);
-      if (token) await StorageAdapter.setItem("token", token);
 
       set({
         status: "authenticated",
-        token: token || undefined,
+        token: user.token,
         user,
       });
 
       return user;
     } catch (err) {
-      console.log("Login error in useAuth:", err);
+      console.log("Login error:", err);
+
       set({
         status: "unauthenticated",
         token: undefined,
         user: undefined,
       });
+
       return null;
     }
   },
 
-  checkStatus: async () => {
+  //----------------------------------
+  // REGISTRO → firebase → backend
+  //----------------------------------
+  register: async (firebaseToken: string, name: string) => {
     try {
-      const token = await StorageAdapter.getItem("token");
-      if (!token) {
-        // No token -> no auth
-        set({
-          status: "unauthenticated",
-          token: undefined,
-          user: undefined,
-        });
-        return;
-      }
-
-      // Validar token contra backend
-      const backendUser = await AuthAPI.validateToken(token);
-      if (!backendUser) {
-        await get().logout();
-        return;
-      }
-
-      await StorageAdapter.setItem("email", backendUser.correo);
-      await StorageAdapter.setItem("fullName", backendUser.nombreCompleto);
-
-      set({
-        status: "authenticated",
-        token,
-        user: backendUser,
-      });
+      await AuthAPI.register(firebaseToken, name);
+      return true;
     } catch (err) {
-      console.log("checkStatus error:", err);
-      await get().logout();
+      console.log("Register error:", err);
+      return false;
     }
   },
 
+  //----------------------------------
+  // VALIDAR SESIÓN GUARDADA
+  //----------------------------------
+  checkStatus: async () => {
+    const token = await StorageAdapter.getItem("token");
+
+    if (!token) {
+      set({ status: "unauthenticated", user: undefined, token: undefined });
+      return;
+    }
+
+    const backendUser = await AuthAPI.validateToken(token);
+
+    if (!backendUser) {
+      await get().logout();
+      return;
+    }
+
+    const user: User = {
+      token,
+      correo: backendUser.email,
+      nombreCompleto: backendUser.fullname,
+      avatar: backendUser.avatar ?? null,
+    };
+
+    set({
+      status: "authenticated",
+      token,
+      user,
+    });
+  },
+
+  //----------------------------------
+  // LOGOUT
+  //----------------------------------
   logout: async () => {
-    // Hacer logout local
     await StorageAdapter.removeItem("token");
     await StorageAdapter.removeItem("email");
     await StorageAdapter.removeItem("fullName");
 
-    // Opcional: también cerrar sesión en Firebase
     try {
-      // Import dinámico para evitar ciclos: require firebase here
-      const { signOut } = require("firebase/auth");
-      const { auth } = require("../../presentation/config/firebase");
       await signOut(auth);
-    } catch (e) {
-      // no crítico si falla
-    }
+    } catch (_) {}
 
     set({
       status: "unauthenticated",
@@ -109,4 +128,5 @@ export const useAuth = create<AuthState>()((set, get) => ({
       user: undefined,
     });
   },
+
 }));

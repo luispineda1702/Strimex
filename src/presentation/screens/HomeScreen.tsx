@@ -1,53 +1,106 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import MovieCard from '../components/MovieCard';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-
-
+import React, { useState } from 'react';
+import { View, ScrollView, StyleSheet, Text, Image } from 'react-native';
+import { useHome } from '../hooks/useHome';
+import MediaCarousel from '../components/MediaCarousel';
+import MediaModal from '../components/MediaModal';
+import { COLORS } from '../config/theme/colors';
 
 const HomeScreen = () => {
-  return (
-    <ScrollView style={styles.container}>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Recomendadas</Text>
-        <View style={styles.grid}>
-          <MovieCard title="Avatar" image={require('../../../assets/avatar.jpg')} />
-          <MovieCard title="Inception" image={require('../../../assets/inception.jpg')} />
-          <MovieCard title="Interstellar" image={require('../../../assets/interstellar.jpg')} />
-        </View>
+  const { homeData, loading } = useHome();
+
+  const [selectedItem, setSelectedItem] = useState<any | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const openModal = (item: any) => {
+    setSelectedItem(item);
+    setModalVisible(true);
+  };
+
+  if (loading || !homeData) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={{ color: 'white' }}>Cargando...</Text>
       </View>
-    </ScrollView>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.header}>
+          <Image
+            source={require('../../../assets/logoresplandor.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </View>
+
+        {/* 🔥 POPULARES */}
+        <MediaCarousel
+          title="🔥 Películas Populares"
+          items={homeData.popularMovies}
+          onSelect={openModal}
+        />
+
+        <MediaCarousel
+          title="🔥 Series Populares"
+          items={homeData.popularSeries}
+          onSelect={openModal}
+        />
+
+        {/* ⭐ TOP RATED */}
+        <MediaCarousel
+          title="⭐ Películas Mejor Calificadas"
+          items={homeData.topMovies}
+          onSelect={openModal}
+        />
+
+        <MediaCarousel
+          title="⭐ Series Mejor Calificadas"
+          items={homeData.topSeries}
+          onSelect={openModal}
+        />
+
+        {/* 📈 TENDENCIAS */}
+        <MediaCarousel
+          title="📈 Tendencias"
+          items={homeData.trending}
+          onSelect={openModal}
+        />
+      </ScrollView>
+
+      {/* MODAL */}
+      <MediaModal
+        visible={modalVisible}
+        item={selectedItem}
+        onClose={() => setModalVisible(false)}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1a1aff',
-    paddingHorizontal: 10,
+    backgroundColor: COLORS.background,
+    paddingVertical: 10,
   },
-  title: {
-    color: '#8A2BE2',
-    fontSize: 22,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginVertical: 20,
-  },
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    color: '#fff',
-    fontSize: 18,
-    marginBottom: 10,
-    marginLeft: 6,
-    paddingTop:10,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: COLORS.background,
     justifyContent: 'center',
+    alignItems: 'center',
   },
+  header: {
+  alignItems: "center",
+  marginBottom: 20,
+},
+
+logo: {
+  width: 160,
+  height: 70,
+  marginTop: 20,
+},
 });
 
 export default HomeScreen;

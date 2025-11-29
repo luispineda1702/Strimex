@@ -1,66 +1,96 @@
+// src/presentation/screens/RegisterScreen.tsx
+
 import React, { useState } from 'react';
-import {  
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  Image, 
-  StyleSheet, 
+import {
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
   StatusBar,
   ActivityIndicator,
   Alert,
+  Image,
 } from 'react-native';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../config/firebase';
+
 import { useAuth } from '../hooks/useAuth';
 import { COLORS } from '../config/theme/colors';
 import { FONTS } from '../config/theme/fonts';
 
-const LoginScreen = () => {
+const RegisterScreen = () => {
   const navigation: any = useNavigation();
-  const { login } = useAuth();
+  const { register } = useAuth();
 
-  const [email, setEmail] = useState('');       
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
-    if (email.trim() === '' || password.trim() === '') {
-      Alert.alert("Error", "Por favor, ingresa correo y contraseña.");
+  const handleRegister = async () => {
+    if (!email || !password || !name) {
+      Alert.alert('Error', 'Completa todos los campos.');
       return;
     }
 
-    setLoading(true);
-    const result = await login(email.trim(), password);
-    setLoading(false);
+    try {
+      setLoading(true);
 
-    if (!result) {
-      Alert.alert("Error", "Credenciales incorrectas o token inválido.");
-      return;
+      // 1) Registrar en Firebase
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      const firebaseToken = await cred.user.getIdToken();
+
+      // 2) Registrar en Backend usando useAuth
+      const ok = await register(firebaseToken, name);
+
+      if (!ok) {
+        Alert.alert("Error", "No se pudo registrar en el servidor.");
+        return;
+      }
+
+      Alert.alert("Éxito", "Registro exitoso. Ahora inicia sesión.");
+      navigation.replace("Login");
+
+    } catch (error: any) {
+      console.log("REGISTER ERROR:", error);
+      Alert.alert("Error", error.message ?? "No se pudo registrar");
+    } finally {
+      setLoading(false);
     }
-
-    navigation.navigate("MainTabs");
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#0B0B0D" />
 
-      <Image 
-        source={require('../../../assets/logoresplandor.png')} 
-        style={styles.logo} 
+      <Image
+        source={require('../../../assets/logoresplandor.png')}
+        style={styles.logo}
         resizeMode="contain"
       />
 
-      <Text style={styles.title}>Bienvenido a Strimex</Text>
+      <Text style={styles.title}>Crear Cuenta</Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Nombre completo"
+        placeholderTextColor="#888"
+        value={name}
+        onChangeText={setName}
+      />
 
       <TextInput
         style={styles.input}
         placeholder="Correo electrónico"
         placeholderTextColor="#888"
-        value={email}
-        onChangeText={setEmail}
         autoCapitalize="none"
         keyboardType="email-address"
+        value={email}
+        onChangeText={setEmail}
       />
 
       <TextInput
@@ -72,17 +102,22 @@ const LoginScreen = () => {
         onChangeText={setPassword}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleRegister}
+        disabled={loading}
+      >
         {loading ? (
           <ActivityIndicator color="#FFF" />
         ) : (
-          <Text style={styles.buttonText}>Iniciar Sesión</Text>
+          <Text style={styles.buttonText}>Registrarme</Text>
         )}
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
         <Text style={styles.registerText}>
-          ¿No tienes cuenta? <Text style={styles.registerLink}>Regístrate</Text>
+          ¿Ya tienes cuenta?{' '}
+          <Text style={styles.registerLink}>Inicia sesión</Text>
         </Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -146,4 +181,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default RegisterScreen;

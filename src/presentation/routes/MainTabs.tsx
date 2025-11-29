@@ -1,55 +1,63 @@
-/* eslint-disable react/no-unstable-nested-components */
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
-import SeriesScreen from '../screens/SeriesScreen';
 import MoviesScreen from '../screens/MoviesScreen';
-import ProfileWrapper from '../screens/ProfileWrapper';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faHome, faTv, faFilm, faUser } from '@fortawesome/free-solid-svg-icons';
+import SeriesScreen from '../screens/SeriesScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import { COLORS } from '../config/theme/colors';
 
-const Tab = createBottomTabNavigator();
+// IMPORTAR SVGs
+import HomeIcon from '../../../assets/icon/home.svg';
+import MovieIcon from '../../../assets/icon//movie.svg';
+import SeriesIcon from '../../../assets/icon/serie.svg';
+import ProfileIcon from '../../../assets/icon/profile.svg';
 
-const MainTabs = () => {
+export type MainTabsParamList = {
+  Home: undefined;
+  Movies: undefined;
+  Series: undefined;
+  Profile: undefined;
+};
+
+const Tab = createBottomTabNavigator<MainTabsParamList>();
+
+const MainTabs: React.FC = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        headerStyle: {
-          backgroundColor: '#0B0B0D',
-          height: 65,
-        },
-        headerTintColor: '#fff',
-        headerTitleAlign: 'left',
-        headerTitleStyle: {
-          fontWeight: 'bold',
-          fontSize: 20,
-          paddingLeft: 10,
-        },
-        headerShadowVisible: false,
-
-        tabBarIcon: ({ color }) => {
-          let icon;
-          if (route.name === 'Inicio') icon = faHome;
-          else if (route.name === 'Series') icon = faTv;
-          else if (route.name === 'Películas') icon = faFilm;
-          else if (route.name === 'Perfil') icon = faUser;
-
-          return <FontAwesomeIcon icon={icon} color={color} size={20} />;
-        },
-        tabBarActiveTintColor: '#9B4DFF',
-        tabBarInactiveTintColor: '#888',
+        headerShown: false,
+        tabBarShowLabel: true,
         tabBarStyle: {
-          backgroundColor: '#0B0B0D',
-          borderTopColor: '#1E1E1E',
-          height: 60,
-          paddingBottom: 5,
+          backgroundColor: '#000',
+          borderTopColor: '#222',
+        },
+        tabBarActiveTintColor: COLORS.primary,
+        tabBarInactiveTintColor: '#777',
+        // eslint-disable-next-line react/no-unstable-nested-components
+        tabBarIcon: ({ focused }) => {
+          let Icon;
+
+          switch (route.name) {
+            case 'Home': Icon = HomeIcon; break;
+            case 'Movies': Icon = MovieIcon; break;
+            case 'Series': Icon = SeriesIcon; break;
+            case 'Profile': Icon = ProfileIcon; break;
+          }
+
+          return (
+            <Icon
+              width={28}
+              height={28}
+              fill={focused ? COLORS.primary : '#777'}
+            />
+          );
         },
       })}
     >
-      <Tab.Screen name="Inicio" component={HomeScreen} />
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Movies" component={MoviesScreen} />
       <Tab.Screen name="Series" component={SeriesScreen} />
-      <Tab.Screen name="Películas" component={MoviesScreen} />
-      <Tab.Screen name="Perfil" component={ProfileWrapper} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
 };

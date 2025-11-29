@@ -1,82 +1,72 @@
-import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, Modal, StyleSheet } from 'react-native';
+import React from 'react';
+import { TouchableOpacity, Image, StyleSheet, Text, View } from 'react-native';
+import { COLORS } from '../config/theme/colors';
+import { FONTS } from '../config/theme/fonts';
 
-interface MovieCardProps {
+interface Props {
   title: string;
-  image: any; 
+  image: string | null | undefined;
+  rating?: number;
+  onPress?: () => void;
 }
 
-const MovieCard: React.FC<MovieCardProps> = ({ title, image }) => {
-  const [modalVisible, setModalVisible] = useState(false);
+const IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
 
+const MovieCard: React.FC<Props> = ({ title, image, rating, onPress }) => {
   return (
-    <>
-      <TouchableOpacity style={styles.card} onPress={() => setModalVisible(true)}>
-        <Image source={image} style={styles.image} resizeMode="cover" />
-      </TouchableOpacity>
+    <TouchableOpacity
+      style={styles.card}
+      onPress={onPress}
+      activeOpacity={0.85}
+    >
+      <Image
+        source={
+          image
+            ? { uri: IMAGE_BASE + image }
+            : require('../../../assets/noimage.png')
+        }
+        style={styles.image}
+      />
 
-      <Modal
-        transparent
-        visible={modalVisible}
-        animationType="slide"
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{title}</Text>
-            <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
-              <Text style={styles.closeText}>Cerrar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-    </>
+      <View style={styles.info}>
+        <Text numberOfLines={1} style={styles.title}>{title}</Text>
+        {rating !== undefined && (
+          <Text style={styles.rating}>⭐ {rating.toFixed(1)}</Text>
+        )}
+      </View>
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    width: 140,
-    margin: 8,
+    width: 130,
+    marginRight: 12,
   },
   image: {
     width: '100%',
-    height: 200,
+    height: 190,
     borderRadius: 12,
+
+    // Estilo profesional tipo Netflix
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  info: {
+    marginTop: 6,
   },
   title: {
-    color: '#fff',
+    fontFamily: FONTS.regular,
     fontSize: 14,
-    marginTop: 6,
-    textAlign: 'center',
+    color: COLORS.text,
   },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    backgroundColor: '#1a1a1a',
-    padding: 24,
-    borderRadius: 16,
-    width: '80%',
-    alignItems: 'center',
-  },
-  modalTitle: {
-    color: '#fff',
-    fontSize: 20,
-    marginBottom: 16,
-  },
-  closeButton: {
-    backgroundColor: '#e50914',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 10,
-  },
-  closeText: {
-    color: '#fff',
-    fontWeight: 'bold',
+  rating: {
+    fontFamily: FONTS.regular,
+    fontSize: 12,
+    color: COLORS.primary,
+    marginTop: 2,
   },
 });
 
